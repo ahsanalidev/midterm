@@ -79,13 +79,8 @@ if __name__ == "__main__":
     # Transform data
     transformed_data_mongo =transform_weather_data_mongo(data)
     # Load data to database
-    if transformed_data_mongo is not None:
-        for column in transformed_data_mongo.columns:
-            print(f"Column: {column}, Data Type: {transformed_data_mongo[column].dtype}")
     csv_path = "/Users/ahsanali/Documents/midterm/ETL_Pipeline/SyedAhsanAli/DS-25:2024/data/new_york_weather_local.csv"
     result_df_csv = local_csv.transform_csv_data(csv_path)
-    for column in result_df_csv.columns:
-        print(f"Column: {column}, Data Type: {result_df_csv[column].dtype}")
     # load_google_sheet_data = google_sheet.load_google_sheet_data()
     transformed_data = pd.concat([transformed_data_openweather, transformed_data_mongo, result_df_csv], ignore_index=True)
     try:
