@@ -1,0 +1,48 @@
+# Ignore virtual environment directory
+venv/
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+
+# Log files
+*.log
+*.out
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment and dependency files
+.env
+.venv
+Pipfile
+Pipfile.lock
+poetry.lock
+
+# Compiled C extensions
+*.so
+
+# macOS system files
+.DS_Store
+
+# VSCode settings
+.vscode/
+
+# PyCharm settings
+.idea/
+
+# Coverage reports
+.coverage
+htmlcov/
+*.cover
+
+# pytest cache
+.pytest_cache/
+
+# mypy cache
+.mypy_cache/
+
+# Build files
+build/
+dist/
+*.egg-info/
