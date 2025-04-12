@@ -48,4 +48,4 @@ dist/
 *.egg-info/
 DS-25:2024/config/*.json
 
-config/
+ETL_Pipeline/SyedAhsanAli/DS-25:2024/config/
