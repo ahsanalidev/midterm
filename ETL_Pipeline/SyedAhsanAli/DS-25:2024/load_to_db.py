@@ -4,7 +4,8 @@ import logging
 import sqlite3
 import pandas as pd
 import local_csv
-# import google_sheet
+import google_sheet
+import relational_db
 
 
 def transform_weather_data_openweather(data):
@@ -29,6 +30,43 @@ def transform_weather_data_openweather(data):
     except Exception as e:
         logging.error(f"Error transforming weather data: {e}")
         return None
+    
+
+def transform_weather_data_postgres(df):
+    """Transform the fetched PostgreSQL weather data into a structured format similar to OpenWeather data.
+    
+    Args:
+        df: pandas DataFrame with columns:
+            city_id, city_name, temperature, humidity, weather_description, wind_speed, cloudiness, timestamp
+
+    Returns:
+        pandas DataFrame with columns:
+            city, temperature, humidity, pressure, weather, wind_speed, date_time
+    """
+    if df.empty:
+        logging.info("Input dataframe is empty.")
+        return None
+
+    transformed_data = []
+    for _, row in df.iterrows():
+        # Convert the Unix timestamp (assumed seconds) to a human-readable datetime string.
+        date_time = datetime.datetime.fromtimestamp(row["timestamp"]).strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Build the transformed row.
+        transformed_row = {
+            "city": row["city_name"],
+            "temperature": row["temperature"],
+            "humidity": row["humidity"],
+            "pressure": None,  # No pressure data available; adjust as required.
+            "weather": row["weather_description"],
+            "wind_speed": row["wind_speed"],
+            "date_time": date_time
+        }
+        transformed_data.append(transformed_row)
+
+    new_df = pd.DataFrame(transformed_data)
+    logging.info("Successfully transformed weather data into the OpenWeather format.")
+    return new_df
 
 
 def transform_weather_data_mongo(mongo_data_list):
@@ -81,8 +119,10 @@ if __name__ == "__main__":
     # Load data to database
     csv_path = "/Users/ahsanali/Documents/midterm/ETL_Pipeline/SyedAhsanAli/DS-25:2024/data/new_york_weather_local.csv"
     result_df_csv = local_csv.transform_csv_data(csv_path)
-    # load_google_sheet_data = google_sheet.load_google_sheet_data()
-    transformed_data = pd.concat([transformed_data_openweather, transformed_data_mongo, result_df_csv], ignore_index=True)
+    load_google_sheet_data = google_sheet.load_google_sheet_data()
+    load_relational_db_data = relational_db.fetch_all_data_df()
+    transformed_data_postgres = transform_weather_data_postgres(load_relational_db_data)
+    transformed_data = pd.concat([transformed_data_openweather, transformed_data_mongo, result_df_csv, load_google_sheet_data, transformed_data_postgres], ignore_index=True)
     try:
         load_data_to_db(transformed_data, "data/weather_data.db", "weather")
         logging.info("ETL pipeline completed successfully.")
