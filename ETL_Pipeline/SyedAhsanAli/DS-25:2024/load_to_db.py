@@ -102,7 +102,7 @@ def load_data_to_db(df, db_name, table_name):
         logging.error(f"Error loading data into database: {e}")
 
 
-if __name__ == "__main__":
+def load_to_db():
 # load json data from /Users/ahsanali/Documents/midterm/ETL_Pipeline/SyedAhsanAli/DS-25:2024/data/New York_weather.json and apply transform_weather_data and load_data_to_db to it
     logging.basicConfig(level=logging.INFO)
     logging.info("Starting ETL pipeline.")  
@@ -123,8 +123,14 @@ if __name__ == "__main__":
     load_relational_db_data = relational_db.fetch_all_data_df()
     transformed_data_postgres = transform_weather_data_postgres(load_relational_db_data)
     transformed_data = pd.concat([transformed_data_openweather, transformed_data_mongo, result_df_csv, load_google_sheet_data, transformed_data_postgres], ignore_index=True)
+    # get the shape of the tranformed data
+    transformed_data_shape = transformed_data.shape
+    print(transformed_data_shape)
     try:
         load_data_to_db(transformed_data, "data/weather_data.db", "weather")
         logging.info("ETL pipeline completed successfully.")
     except Exception as e:
-        logging.error(f"ETL pipeline failed: {e}")     
+        logging.error(f"ETL pipeline failed: {e}") 
+
+if __name__ == "__main__":
+    load_to_db()    

@@ -16,8 +16,7 @@ CITY = "New York"
 #         load_data_to_db(transformed_data, DB_NAME, TABLE_NAME)
 #     logging.info("ETL pipeline completed.")
 
-
-if __name__ == "__main__":
+def fetch_weather_data_all():
     openweather.extract_weather_data(CITY)
     client = mongodb.connect_to_mongodb()
     if not client:
@@ -29,8 +28,6 @@ if __name__ == "__main__":
         exit(1)
     
   
-    print("\n🔍 Fetching the 3 most recent weather records:")
-    mongodb.fetch_weather_data(client, limit=3)
-    # while True:
-    #     extract_weather_data(CITY)
-    #     time.sleep(3600)  # Run every 1 hour
+
+if __name__ == "__main__":
+    fetch_weather_data_all()

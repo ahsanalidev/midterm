@@ -25,6 +25,8 @@ def connect_to_mongodb():
         print(f"❌ Connection failed: {e}")
         return None
 
+from bson import json_util  # Import json_util to handle ObjectId conversion
+
 def fetch_weather_data(client, limit=None, city=None):
     """Fetch weather data from MongoDB with optional filters"""
     try:
@@ -48,14 +50,19 @@ def fetch_weather_data(client, limit=None, city=None):
         weather_data = list(cursor)
         
         print(f"📊 Retrieved {len(weather_data)} weather records")
-          # save the data as json file in data folder
+        
+        # Save the data as a JSON file in the data folder
+        DATA_FOLDER = "data"  # Define the data folder
         if not os.path.exists(DATA_FOLDER):
             os.makedirs(DATA_FOLDER)
+        
         with open(os.path.join(DATA_FOLDER, f"{city}_weather_mongo.json"), "w") as json_file:
-            json.dump(weather_data, json_file)
+            # Use json_util.dumps to convert the data with ObjectIds
+            json_file.write(json_util.dumps(weather_data))
+        
         logging.info(f"Weather data saved to {city}_weather_mongo.json.")
         return weather_data
-        
+
     except Exception as e:
-        print(f"❌ Error fetching data: {e}")
-        return None
+        logging.error("Error fetching data: %s", e)
+        raise e
